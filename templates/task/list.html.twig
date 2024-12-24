@@ -14,39 +14,40 @@
 {% endblock %}
 {% block body %}
 
-<div class="container">
+    <div class="container">
 
-    <div class="card card-default" style="margin-top: 25px">
-        <div class="card-header">
-            <span>Task List</span>
-            <a class="float-end"> Add </a>
-        </div>
-        <div class="card-body">
-            <div class="row g-0" style="margin-bottom: 10px">
-                <div class="col-md-2" style="text-align: center">
-                    Status
-                </div>
-                <div class="col-md-4">
-                    <select class="form-select" aria-label="Default select example">
-                        <option selected>Open this select menu</option>
-                        <option value="1">One</option>
-                        <option value="2">Two</option>
-                        <option value="3">Three</option>
-                    </select>
-                </div>
+        <div class="card card-default" style="margin-top: 25px">
+            <div class="card-header">
+                <span>Task List</span>
+                <a class="float-end" href="{{ path('app_task_add') }}"> Add </a>
             </div>
+            <div class="card-body">
+                {#<div class="row g-0" style="margin-bottom: 10px">#}
+                    {#<div class="col-md-2" style="text-align: center">#}
+                        {#Status#}
+                    {#</div>#}
+                    {#<div class="col-md-4">#}
+                        {#<select class="form-select" aria-label="Default select example">#}
+                            {#<option selected>Open this select menu</option>#}
+                            {#<option value="1">One</option>#}
+                            {#<option value="2">Two</option>#}
+                            {#<option value="3">Three</option>#}
+                        {#</select>#}
+                    {#</div>#}
+                {#</div>#}
 
-            <div id="presidents">Loading...</div>
-            <!-- Insert this at the end of your body element, but before the closing tag -->
-            <script src="{{ asset('bundles/datatables/js/datatables.js') }}"></script>
-            <script>
-                $(function () {
-                    $('#presidents').initDataTables({{ datatable_settings(datatable) }});
-                });
-            </script>
+                <div id="presidents">Loading...</div>
+                <!-- Insert this at the end of your body element, but before the closing tag -->
+                <script src="{{ asset('bundles/datatables/js/datatables.js') }}"></script>
+                <script>
+                    $(function () {
+                        $('#presidents').initDataTables({{ datatable_settings(datatable) }});
+                    });
+                </script>
 
+            </div>
         </div>
     </div>
     <!-- Insert this where you want the table to appear -->
 
-    {% endblock %}
+{% endblock %}
