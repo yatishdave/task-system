@@ -35,3 +35,7 @@ phpunit.xml.dist
 # Jet Brains/Phpstrom Files
 /.idea
 
+
+###> lexik/jwt-authentication-bundle ###
+/config/jwt/*.pem
+###< lexik/jwt-authentication-bundle ###

@@ -9,10 +9,19 @@ enable virtual host file using a2ensite command
 restart apache 
 copy .env.dist to .env file and update DATABASE_URL param
 go to console/terminal run below command 
-compsoer install 
+compsoer install
+
+this project use jwt token so run below command to generate keys 
+php bin/console lexik:jwt:generate-keypair
+ 
 php bin/console c:c
 
-to acces page 
+below are page url  
 http://task-system.local/login 
 http://task-system.local/logout
 http://task-system.local/task
+
+
+for api login 
+
+curl -X POST -H "Content-Type: application/json" http://task-system.local/api/login_check -d '{"username":"test3","password":"1234567"}'

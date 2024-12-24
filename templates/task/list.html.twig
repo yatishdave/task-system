@@ -14,26 +14,53 @@
 {% endblock %}
 {% block body %}
 
-    <div class="container">
+    <div class="container p-1">
+        <div class="container mt-1">
+            <div class="row">
+                <div class="col-sm-4">
+                    <p>Username: {{ app.user.username }}</p>
+                </div>
+                <div class="col-sm-4 ">
+                  <a class="float-end" href="{{ path('app_logout') }}">LogOut</a>
+                </div>
 
-        <div class="card card-default" style="margin-top: 25px">
+            </div>
+        </div>
+        {% for message in app.flashes('success') %}
+            <div class="alert alert-success" role="alert" style="margin-top: 25px;margin-bottom: 15px">
+                {{ message }}
+            </div>
+        {% endfor %}
+        {% for message in app.flashes('error') %}
+            <div class="alert alert-danger" role="alert" style="margin-top: 25px;margin-bottom: 15px">
+                {{ message }}
+            </div>
+        {% endfor %}
+
+        {#{% for message in app.flashes('error') %}#}
+        {#<div class="alert alert-e" role="alert">#}
+        {#{{ message }}#}
+        {#</div>#}
+        {#{% endfor %}#}
+        <div class="card card-default">
             <div class="card-header">
+
                 <span>Task List</span>
                 <a class="float-end" href="{{ path('app_task_add') }}"> Add </a>
             </div>
             <div class="card-body">
                 {#<div class="row g-0" style="margin-bottom: 10px">#}
-                    {#<div class="col-md-2" style="text-align: center">#}
-                        {#Status#}
-                    {#</div>#}
-                    {#<div class="col-md-4">#}
-                        {#<select class="form-select" aria-label="Default select example">#}
-                            {#<option selected>Open this select menu</option>#}
-                            {#<option value="1">One</option>#}
-                            {#<option value="2">Two</option>#}
-                            {#<option value="3">Three</option>#}
-                        {#</select>#}
-                    {#</div>#}
+                {#<div class="col-md-2" style="text-align: center">#}
+                {#Status#}
+                {#</div>#}
+                {#<div class="col-md-4">#}
+                {#<select class="form-select" aria-label="Default select example">#}
+                {#<option selected>Open this select menu</option>#}
+                {#<option value="1">One</option>#}
+                {#<option value="2">Two</option>#}
+                {#<option value="3">Three</option>#}
+                {#</select>#}
+                {#</div>#}
                 {#</div>#}
 
                 <div id="presidents">Loading...</div>
@@ -42,12 +69,32 @@
                 <script>
                     $(function () {
                         $('#presidents').initDataTables({{ datatable_settings(datatable) }});
+                        $('.testing').on('click', function (e) {
+                            e.preventDefault();
+                            alert("testing");
+
+                        });
+                    });
+
+                    $("body").on("click", ".delete-task-link", function (e) {
+                        var dataId = $(this).attr("data-id");
+                        if (dataId) {
+                            $.ajax({
+                                url: '/task/delete',
+                                method: 'POST',
+                                data: {id: dataId},
+                                success: function (data) {
+                                    alert(data.message);
+                                    window.location.reload();
+                                },
+                                error: function () {
+                                    alert('There are some issue while processing.Please try again.');
+                                }
+                            })
+                        }
                     });
                 </script>
-
             </div>
         </div>
     </div>
-    <!-- Insert this where you want the table to appear -->
-
 {% endblock %}

@@ -31,7 +31,7 @@ class Task
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private ?TaskCategory $category = null;
 
-    #[ORM\ManyToOne(inversedBy: 'tasks')]
+    #[ORM\ManyToOne(targetEntity: User::class,inversedBy: 'tasks')]
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     private ?User $user = null;
 
