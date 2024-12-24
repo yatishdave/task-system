@@ -1,0 +1,32 @@
+{% extends 'base.html.twig' %}
+{% block stylesheets %}
+    {{ parent() }}
+    <script type="text/css">
+        .card-heading h3 {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            line-height: normal;
+            width: 75%;
+            padding-top: 8px;
+        }
+    </script>
+{% endblock %}
+{% block body %}
+
+    <div class="container">
+
+        <div class="card card-default" style="margin-top: 25px">
+            <div class="card-header">
+                <span>Task List</span>
+                <a class="float-end" href="{{ path('app_task_add') }}"> Add </a>
+            </div>
+            <div class="card-body">
+                {{ form_start(form) }}
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+    <!-- Insert this where you want the table to appear -->
+
+{% endblock %}
