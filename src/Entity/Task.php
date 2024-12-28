@@ -5,6 +5,8 @@ namespace App\Entity;
 use App\Repository\TaskRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+
 
 #[ORM\Entity(repositoryClass: TaskRepository::class)]
 class Task
@@ -15,24 +17,31 @@ class Task
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: 'Please enter a task title.')]
     private ?string $title = null;
 
     #[ORM\Column(type: Types::TEXT)]
+    #[Assert\NotBlank(message: 'Please enter task description.')]
     private ?string $taskDescription = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
+    #[Assert\NotBlank(message: 'Please enter task due date.')]
+    #[Assert\GreaterThanOrEqual('today')]
     private ?\DateTimeInterface $dueDate = null;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
+    #[Assert\NotBlank(message: 'Please enter task status.')]
     private ?TaskStatus $status = null;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
+    #[Assert\NotBlank(message: 'Please enter task category.')]
     private ?TaskCategory $category = null;
 
     #[ORM\ManyToOne(targetEntity: User::class,inversedBy: 'tasks')]
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
+    #[Assert\NotBlank(message: 'Please enter user data.')]
     private ?User $user = null;
 
     public function getId(): ?int
@@ -45,7 +54,7 @@ class Task
         return $this->title;
     }
 
-    public function setTitle(string $title): static
+    public function setTitle(?string $title): static
     {
         $this->title = $title;
 
@@ -57,7 +66,7 @@ class Task
         return $this->taskDescription;
     }
 
-    public function setTaskDescription(string $taskDescription): static
+    public function setTaskDescription(?string $taskDescription): static
     {
         $this->taskDescription = $taskDescription;
 
@@ -69,7 +78,7 @@ class Task
         return $this->dueDate;
     }
 
-    public function setDueDate(\DateTimeInterface $dueDate): static
+    public function setDueDate(?\DateTimeInterface $dueDate): static
     {
         $this->dueDate = $dueDate;
 
