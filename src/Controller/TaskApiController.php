@@ -11,6 +11,7 @@ namespace App\Controller;
 
 use App\Entity\Task;
 use App\Form\TaskType;
+use App\Service\CommonUtility;
 use Doctrine\ORM\EntityManagerInterface;
 use http\Exception;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -47,22 +48,31 @@ class TaskApiController extends AbstractFOSRestController
     }
 
     #[Rest\Route("/api/task/create", name:"api_task_create",methods:"POST")]
-    public function createAction(request $request,EntityManagerInterface $entityManager)
+    public function createAction(request $request, EntityManagerInterface $entityManager, CommonUtility $commonUtility)
     {
-
         try {
             $params = json_decode($request->getContent(), true, 512);
             $objTask = new Task();
-            $form = $this->createForm(TaskType::class,$objTask);
+            $objTask->setUser($this->getUser());
+            $form = $this->createForm(TaskType::class, $objTask, ['csrf_protection' => false, 'allow_extra_fields' => false]);
             $form->submit($params, true);
-            if ($form->isSubmitted() || $form->isValid()) {
-                var_dump("valid");
-                die;
+
+            if ($form->isSubmitted() && $form->isValid()) {
+                $entityManager->persist($objTask);
+                $entityManager->flush();
+                return $this->view([
+                    'code' => Response::HTTP_OK,
+                    'message' => 'Task added successfully.'
+                ], Response::HTTP_OK);
             }
-            else{
-                var_dump("errr");
-                die;
-            }
+
+            $errors = $commonUtility->getErrorMessages($form);
+            return $this->view([
+                'code' => Response::HTTP_BAD_REQUEST,
+                'data' => [],
+                'message' => $errors,
+            ], Response::HTTP_BAD_REQUEST);
+
 
         } catch (Exception $exception) {
             return $this->view([
@@ -71,6 +81,95 @@ class TaskApiController extends AbstractFOSRestController
                 'message' => 'There are some issue while processing.Please try after some time.'
             ], Response::HTTP_OK);
         }
-
     }
+
+    #[Rest\Route("/api/task/edit", name:"api_task_update",methods:"POST")]
+    public function editAction(request $request, EntityManagerInterface $entityManager, CommonUtility $commonUtility)
+    {
+
+        try {
+            $params = json_decode($request->getContent(), true, 512);
+            if (isset($params['id'])) {
+                $objTask = $entityManager->getRepository(Task::class)
+                    ->findOneBy(['id' => $params['id'], 'user' => $this->getUser()]);
+                if ($objTask instanceof Task) {
+                    $form = $this->createForm(TaskType::class, $objTask, ['csrf_protection' => false, 'allow_extra_fields' => true]);
+                    $form->submit($params, true);
+
+                    if ($form->isSubmitted() && $form->isValid()) {
+                        $entityManager->persist($objTask);
+                        $entityManager->flush();
+                        return $this->view([
+                            'code' => Response::HTTP_OK,
+                            'message' => 'Task updated successfully.'
+                        ], Response::HTTP_OK);
+                    }
+                    $errors = $commonUtility->getErrorMessages($form);
+                    return $this->view([
+                        'code' => Response::HTTP_BAD_REQUEST,
+                        'data' => [],
+                        'message' => $errors,
+                    ], Response::HTTP_BAD_REQUEST);
+                }
+                return $this->view([
+                    'code' => Response::HTTP_BAD_REQUEST,
+                    'data' => [],
+                    'message' => 'Task not found.'
+                ], Response::HTTP_BAD_REQUEST);
+            }
+
+            return $this->view([
+                'code' => Response::HTTP_BAD_REQUEST,
+                'data' => [],
+                'message' => 'Required parameter missing.'
+            ], Response::HTTP_BAD_REQUEST);
+
+
+        } catch (Exception $exception) {
+            return $this->view([
+                'code' => Response::HTTP_OK,
+                'data' => [],
+                'message' => 'There are some issue while processing.Please try after some time.'
+            ], Response::HTTP_OK);
+        }
+    }
+
+    #[Rest\Route("/api/task/delete", name:"api_task_delete",methods:"POST")]
+    public function deleteAction(request $request, EntityManagerInterface $entityManager)
+    {
+        try {
+            $params = json_decode($request->getContent(), true, 512);
+            if (isset($params['id'])) {
+                $objTask = $entityManager->getRepository(Task::class)
+                    ->findOneBy(['id' => $params['id'], 'user' => $this->getUser()]);
+                if ($objTask instanceof Task) {
+                    $entityManager->remove($objTask);
+                    $entityManager->flush();
+                    return $this->view([
+                        'code' => Response::HTTP_OK,
+                        'message' => 'Task delete successfully.'
+                    ], Response::HTTP_OK);
+                }
+                return $this->view([
+                    'code' => Response::HTTP_BAD_REQUEST,
+                    'data' => [],
+                    'message' => 'Task not found.'
+                ], Response::HTTP_BAD_REQUEST);
+            }
+
+            return $this->view([
+                'code' => Response::HTTP_BAD_REQUEST,
+                'data' => [],
+                'message' => 'Required parameter missing.'
+            ], Response::HTTP_BAD_REQUEST);
+        } catch (Exception $exception) {
+            return $this->view([
+                'code' => Response::HTTP_OK,
+                'data' => [],
+                'message' => 'There are some issue while processing.Please try after some time.'
+            ], Response::HTTP_OK);
+        }
+    }
+
+
 }

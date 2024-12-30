@@ -26,12 +26,13 @@ class Task
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     #[Assert\NotBlank(message: 'Please enter task due date.')]
-    #[Assert\GreaterThanOrEqual('today')]
+    #[Assert\GreaterThanOrEqual('today',message: 'Due date must be feature or current date.')]
     private ?\DateTimeInterface $dueDate = null;
 
     #[ORM\ManyToOne]
     #[ORM\JoinColumn(nullable: false, onDelete: 'CASCADE')]
     #[Assert\NotBlank(message: 'Please enter task status.')]
+
     private ?TaskStatus $status = null;
 
     #[ORM\ManyToOne]
